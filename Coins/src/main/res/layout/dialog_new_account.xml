@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <EditText
+        android:id="@+id/dialog_new_account_address_edtitext"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:hint="address"
+        android:text="13Lyp8iawQyyychG6aHe71UkkNp53cR6DW"/>
+    <NumberPicker
+        android:id="@+id/dialog_new_account_type_picker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true" />
+
+</LinearLayout>
