@@ -2,7 +2,7 @@ package com.eferrais.api.baseclient;
 
 import android.content.Context;
 
-import com.eferrais.api.manager.CryptoManager;
+import com.eferrais.api.converstionrate.CryptoType;
 import com.eferrais.api.model.Account;
 
 import java.lang.reflect.Constructor;
@@ -19,12 +19,12 @@ public class CryptoAddressClient {
         this.context = context;
     }
 
-    public void getBalance(String address, CryptoManager.CRYPTO_TYPE type, CryptoCallback<Account> callback) {
+    public void getBalance(String address, CryptoType type, CryptoCallback<Account> callback) {
         Class coinClass = type.getCoinClass();
-        Constructor<?> ctor = null;
+        Constructor<?> ctor;
         try {
             ctor = coinClass.getConstructor(Context.class);
-            CryptoClientInterface coinClient = (CryptoClientInterface) ctor.newInstance(new Object[] {this.context});
+            CryptoClientInterface coinClient = (CryptoClientInterface) ctor.newInstance(new Object[]{this.context});
             coinClient.getBalance(address, callback);
 
         } catch (NoSuchMethodException e) {

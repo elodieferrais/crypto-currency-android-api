@@ -1,4 +1,4 @@
-package com.eferrais.api.manager;
+package com.eferrais.api.converstionrate;
 
 /**
  * Created by elodieferrais on 3/3/14.

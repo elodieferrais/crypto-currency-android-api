@@ -13,24 +13,24 @@ import java.util.ArrayList;
 /**
  * Created by elodieferrais on 3/1/14.
  */
-public class SharedPreferencesHelper {
+public class AccountsManager {
     private static ArrayList<Account> accounts = new ArrayList<Account>();
     private static boolean hasPreferencesChanged = true;
     private static SharedPreferences sharedPreferences;
-    private String MY_PREFERENCES = "com.eferrais.api:PREFERENCES";
-    private String MY_PREFERENCES_ACOUNTS = "com.eferrais.api:PREFERENCES:ACOUNTS";
+    private String MY_PREFERENCES = "com.eferrais.coins:PREFERENCES";
+    private String MY_PREFERENCES_ACOUNTS = "com.eferrais.coins:PREFERENCES:ACOUNTS";
 
-    public SharedPreferencesHelper(Context context) {
+    public AccountsManager(Context context) {
         sharedPreferences = context.getSharedPreferences(MY_PREFERENCES, context.MODE_PRIVATE);
     }
 
+    /**
+     * Reset old data on disk and those accounts instead
+     * @param accounts
+     */
     public void saveAccounts(ArrayList<Account> accounts) {
-        try {
-            sharedPreferences.edit().putString(MY_PREFERENCES_ACOUNTS, SerializableHelper.toString(accounts)).commit();
-        } catch (IOException e) {
-            Log.e(SharedPreferencesHelper.class.getName(), "The following accounts have not been saved: " + accounts.toString(), e);
-        }
-        hasPreferencesChanged = true;
+        this.accounts = accounts;
+        commit();
     }
 
     public ArrayList<Account> getAccounts() {
@@ -44,9 +44,9 @@ public class SharedPreferencesHelper {
                     accounts = (ArrayList<Account>) SerializableHelper.fromString(accountsSerialized);
                 }
             } catch (IOException e) {
-                Log.e(SharedPreferencesHelper.class.getName(), "The following accounts have not been de-serialized: " + accountsSerialized, e);
+                Log.e(AccountsManager.class.getName(), "The following accounts have not been de-serialized: " + accountsSerialized, e);
             } catch (ClassNotFoundException e) {
-                Log.e(SharedPreferencesHelper.class.getName(), "The following accounts have not been de-serialized: " + accountsSerialized, e);
+                Log.e(AccountsManager.class.getName(), "The following accounts have not been de-serialized: " + accountsSerialized, e);
 
             }
         }
@@ -59,12 +59,15 @@ public class SharedPreferencesHelper {
         if (isAlreadySaved(account.address)) {
             return;
         }
-        ArrayList<Account> accounts = getAccounts();
-        accounts.add(account);
+        getAccounts().add(account);
         saveAccounts(accounts);
-        hasPreferencesChanged = true;
     }
 
+    /**
+     *
+     * @param address
+     * @return true if this account exist otherwise return false;
+     */
     public boolean isAlreadySaved(String address) {
         for (Account account : getAccounts()) {
             if (account.address.equals(address)) {
@@ -72,5 +75,32 @@ public class SharedPreferencesHelper {
             }
         }
         return false;
+    }
+
+    /**
+     *
+     * @param address
+     * @return account with this specific address if it exists, otherwise return null;
+     */
+    public Account getAccount(String address) {
+        for(int i = 0; i < getAccounts().size(); i++) {
+            Account account = getAccounts().get(i);
+            if (address.equals(account.address)) {
+                return account;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Save on the disk the accounts that as been updates in the account manager so far
+     */
+    public void commit() {
+        try {
+            sharedPreferences.edit().putString(MY_PREFERENCES_ACOUNTS, SerializableHelper.toString(accounts)).commit();
+        } catch (IOException e) {
+            Log.e(AccountsManager.class.getName(), "The following accounts have not been saved: " + accounts.toString(), e);
+        }
+        hasPreferencesChanged = true;
     }
 }

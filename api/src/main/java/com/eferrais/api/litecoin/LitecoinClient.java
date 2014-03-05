@@ -10,7 +10,7 @@ import com.eferrais.api.baseclient.BaseCryptoClient;
 import com.eferrais.api.baseclient.CryptoCallback;
 import com.eferrais.api.baseclient.CryptoClientInterface;
 import com.eferrais.api.baseclient.MyVolley;
-import com.eferrais.api.manager.CryptoManager;
+import com.eferrais.api.converstionrate.CryptoType;
 import com.eferrais.api.model.Account;
 
 import org.json.JSONObject;
@@ -39,7 +39,7 @@ public class LitecoinClient extends BaseCryptoClient implements CryptoClientInte
                             balance = data.optDouble("balance");
                         }
                     }
-                    Account account = new Account(address, balance, CryptoManager.CRYPTO_TYPE.LITECOIN);
+                    Account account = new Account(address, balance, CryptoType.LITECOIN);
                     callback.onResult(account, null);
                 }
             }

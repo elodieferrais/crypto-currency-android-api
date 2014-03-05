@@ -3,6 +3,7 @@ package com.eferrais.coins;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,7 +15,7 @@ import com.eferrais.api.baseclient.CryptoAddressClient;
 import com.eferrais.api.baseclient.CryptoCallback;
 import com.eferrais.api.model.Account;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends Activity {
 
@@ -27,7 +28,7 @@ public class MainActivity extends Activity {
 
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, new PlaceholderFragment(), PlaceholderFragment.class.getSimpleName())
                     .commit();
         }
 
@@ -49,6 +50,7 @@ public class MainActivity extends Activity {
         int id = item.getItemId();
         if (id == R.id.action_example) {
             AccountCreationDialog accountCreationDialog = new AccountCreationDialog(this);
+            accountCreationDialog.setAccountCreationDialogListener((AccountCreationDialogListener) getFragmentManager().findFragmentByTag(PlaceholderFragment.class.getSimpleName()));
             accountCreationDialog.show();
         }
         return super.onOptionsItemSelected(item);
@@ -57,7 +59,7 @@ public class MainActivity extends Activity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class PlaceholderFragment extends Fragment {
+    public static class PlaceholderFragment extends Fragment implements AccountCreationDialogListener {
         /**
          * The fragment argument representing the section number for this
          * fragment.
@@ -65,23 +67,27 @@ public class MainActivity extends Activity {
         private static final String ARG_SECTION_NUMBER = "section_number";
         private BalanceListAdapter adapter;
         private CryptoAddressClient client;
-        private SharedPreferencesHelper sharedPreferencesHelper;
+        private AccountsManager accountsManager;
         private CryptoCallback<Account> callback = new CryptoCallback<Account>() {
             @Override
             public void onResult(Account result, Error error) {
+                Log.d("ELODIE", "onResult balance:" + String.valueOf(result.balance));
                 if (result == null) {
                     return;
                 }
                 if (error != null) {
                     //TODO Alert dialog
+                    return;
                 }
-                int position = adapter.getPosition(result.address);
-                if (position != -1) {
-                    adapter.getItem(position).setBalance(result.balance);
-                    adapter.notifyDataSetChanged();
-                }
-                ;
+
+                accountsManager.getAccount(result.address).setBalance(result.balance);
+                accountsManager.commit();
+                adapter.notifyDataSetChanged();
+                Log.d("ELODIE", "notifyDataSetChanged");
             }
+
+            ;
+
         };
 
         /**
@@ -102,7 +108,7 @@ public class MainActivity extends Activity {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            sharedPreferencesHelper = new SharedPreferencesHelper(getActivity());
+            accountsManager = new AccountsManager(getActivity());
 
         }
 
@@ -111,20 +117,34 @@ public class MainActivity extends Activity {
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             ListView listView = (ListView) rootView.findViewById(R.id.fragment_main_listview);
-            ArrayList<Account> accounts = sharedPreferencesHelper.getAccounts();
-            adapter = new BalanceListAdapter(getActivity(), R.layout.cell_account, accounts);
+            adapter = new BalanceListAdapter(getActivity(), R.layout.cell_account);
             listView.setAdapter(adapter);
-            updateCoins();
+            updateCoins(accountsManager.getAccounts());
             return rootView;
         }
 
-        public void updateCoins() {
+        public void updateCoins(List<Account> accounts) {
             if (client == null) {
                 client = new CryptoAddressClient(getActivity());
             }
-            for (Account account:sharedPreferencesHelper.getAccounts()) {
+            for (Account account : accounts) {
                 client.getBalance(account.address, account.coinType, callback);
             }
+        }
+
+        @Override
+        public void onSuccessAccountCreation(List<Account> accounts) {
+            Log.d("ELODIE", "onSuccessAccountCreation");
+            if (adapter != null) {
+                Log.d("ELODIE", "notifyDataSetChanged");
+                adapter.notifyDataSetChanged();
+                Log.d("ELODIE", "updateCoinsBalance");
+                updateCoins(accounts);
+            }
+        }
+
+        @Override
+        public void onCancelAccountCreation() {
         }
     }
 }

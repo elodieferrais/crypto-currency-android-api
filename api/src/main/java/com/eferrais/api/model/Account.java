@@ -1,6 +1,6 @@
 package com.eferrais.api.model;
 
-import com.eferrais.api.manager.CryptoManager;
+import com.eferrais.api.converstionrate.CryptoType;
 
 import java.io.Serializable;
 
@@ -9,16 +9,18 @@ import java.io.Serializable;
  */
 public class Account implements Serializable {
     final public String address;
-    public Double balance;
-    final public CryptoManager.CRYPTO_TYPE coinType;
+    public Double balance = Double.NaN;
+    final public CryptoType coinType;
 
-    public Account(String address, Double balance, CryptoManager.CRYPTO_TYPE coinType) {
+    public Account(String address, Double balance, CryptoType coinType) {
         this.address = address;
-        this.balance = balance;
+        setBalance(balance);
         this.coinType = coinType;
     }
 
     public void setBalance(Double balance) {
-        this.balance = balance;
+        if (balance != null) {
+            this.balance = balance;
+        }
     }
 }

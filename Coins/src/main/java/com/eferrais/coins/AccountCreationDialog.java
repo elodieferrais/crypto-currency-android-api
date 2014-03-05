@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.NumberPicker;
 
-import com.eferrais.api.manager.CryptoManager;
+import com.eferrais.api.converstionrate.CryptoType;
 import com.eferrais.api.model.Account;
 
 /**
@@ -19,13 +19,14 @@ public class AccountCreationDialog {
     private EditText addressEditText;
     private NumberPicker coinsTypePicker;
     private AlertDialog dialog;
-    private CryptoManager.CRYPTO_TYPE[] coinsType;
+    private CryptoType[] coinsType;
     private String[] coinsTypeValue;
-    private SharedPreferencesHelper sharedPreferencesHelper;
+    private AccountsManager accountsManager;
+    private AccountCreationDialogListener listener;
 
     public AccountCreationDialog(Context context) {
         this.context = context;
-        sharedPreferencesHelper = new SharedPreferencesHelper(context);
+        accountsManager = new AccountsManager(context);
         init();
     }
 
@@ -45,30 +46,38 @@ public class AccountCreationDialog {
         builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-                saveNewAccount();
+                if (addressEditText.getText() != null && !addressEditText.getText().toString().trim().isEmpty()) {
+                    dialog.dismiss();
+                    Account account = new Account(addressEditText.getText().toString(), null, getCoinsType()[coinsTypePicker.getValue()]);
+                    saveNewAccount(account);
+                    if (listener != null) {
+                        listener.onSuccessAccountCreation(accountsManager.getAccounts());
+                    }
+                }
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
+                listener.onCancelAccountCreation();
             }
         });
         dialog = builder.create();
     }
 
-    private void saveNewAccount() {
-        if (addressEditText.getText() != null && !addressEditText.getText().toString().trim().isEmpty()) {
-            Account account = new Account(addressEditText.getText().toString(), null, getCoinsType()[coinsTypePicker.getValue()]);
-            if (sharedPreferencesHelper.isAlreadySaved(account.address)) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                builder.setTitle("Already saved");
-                builder.setMessage("You cannot save two times the same address account");
-                builder.create().show();
-            } else {
-                sharedPreferencesHelper.addAccount(account);
-            }
+    public void setAccountCreationDialogListener(AccountCreationDialogListener listener) {
+        this.listener = listener;
+    }
+
+    private void saveNewAccount(Account account) {
+        if (accountsManager.isAlreadySaved(account.address)) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle("Already saved");
+            builder.setMessage("You cannot save two times the same address account");
+            builder.create().show();
+        } else {
+            accountsManager.addAccount(account);
         }
     }
 
@@ -84,7 +93,7 @@ public class AccountCreationDialog {
         }
 
         if (coinsType == null) {
-            coinsType = CryptoManager.CRYPTO_TYPE.values();
+            coinsType = CryptoType.values();
         }
         coinsTypeValue = new String[coinsType.length];
         for (int j = 0; j < coinsType.length; j++) {
@@ -94,11 +103,11 @@ public class AccountCreationDialog {
 
     }
 
-    private CryptoManager.CRYPTO_TYPE[] getCoinsType() {
+    private CryptoType[] getCoinsType() {
         if (coinsType != null) {
             return coinsType;
         }
-        coinsType = CryptoManager.CRYPTO_TYPE.values();
+        coinsType = CryptoType.values();
         return coinsType;
     }
 }

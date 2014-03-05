@@ -10,7 +10,7 @@ import com.eferrais.api.baseclient.BaseCryptoClient;
 import com.eferrais.api.baseclient.CryptoCallback;
 import com.eferrais.api.baseclient.CryptoClientInterface;
 import com.eferrais.api.baseclient.MyVolley;
-import com.eferrais.api.manager.CryptoManager;
+import com.eferrais.api.converstionrate.CryptoType;
 import com.eferrais.api.model.Account;
 
 /**
@@ -32,7 +32,7 @@ public class DogeClient extends BaseCryptoClient implements CryptoClientInterfac
                 } else {
                     try {
                         Double balance = Double.valueOf(result);
-                        Account account = new Account(address, balance, CryptoManager.CRYPTO_TYPE.DOGECOIN);
+                        Account account = new Account(address, balance, CryptoType.DOGECOIN);
                         callback.onResult(account, null);
                     } catch (Exception e) {
                         callback.onResult(null, new Error(e.getMessage()));
@@ -44,7 +44,8 @@ public class DogeClient extends BaseCryptoClient implements CryptoClientInterfac
             public void onErrorResponse(VolleyError volleyError) {
                 callback.onResult(null, new Error(volleyError.getMessage()));
             }
-        });
+        }
+        );
         MyVolley.getRequestQueue(context).add(request);
     }
 }
