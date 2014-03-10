@@ -16,9 +16,9 @@ import java.util.Calendar;
  */
 
 public enum CryptoType implements Serializable {
-    BITCOIN(BitcoinClient.class, "Bitcoin", null),
-    LITECOIN(LitecoinClient.class, "Litecoin", "http://data.bter.com/api/1/ticker/ltc_btc"),
-    DOGECOIN(DogeClient.class, "Dogecoin", "http://data.bter.com/api/1/ticker/doge_btc");
+    BITCOIN(BitcoinClient.class, "Bitcoin", null, "BTC"),
+    LITECOIN(LitecoinClient.class, "Litecoin", "http://data.bter.com/api/1/ticker/ltc_btc", "LTC"),
+    DOGECOIN(DogeClient.class, "Dogecoin", "http://data.bter.com/api/1/ticker/doge_btc", "DOGE");
 
     /**
      * speficic client class
@@ -29,6 +29,10 @@ public enum CryptoType implements Serializable {
      */
     private String label;
     /**
+     * Crypto Unity
+     */
+    private String abbreviation;
+    /**
      * change is the change rate from the crypto-currency to BTC if it's not BITCOIN
      */
     private Double changeRateToBTC = Double.NaN;
@@ -38,9 +42,13 @@ public enum CryptoType implements Serializable {
     private String url;
     /**
      * Fetch
-     * Last time change rate has been
+     * Last time change rate (crypto to BTC)  has been updated
      */
     private Calendar lastFetchBTC;
+    /**
+     * Fetch
+     * Last time change rate (BTC to USD)  has been updated
+     */
     private Calendar lastFetchUSD;
     private CryptoChangeClient client;
     private SharedPreferencesCryptoHelper sharedPreferencesCryptoHelper;
@@ -49,10 +57,11 @@ public enum CryptoType implements Serializable {
     private static final int VALID_INTERVAL = 1000 * 60 * 5;
 
 
-    CryptoType(Class coinClass, String label, String url) {
+    CryptoType(Class coinClass, String label, String url, String abbreviation) {
         this.coinClass = coinClass;
         this.label = label;
         this.url = url;
+        this.abbreviation = abbreviation;
     }
 
     public void setChangeRateToBTC(Double change, Context context) {
@@ -92,6 +101,11 @@ public enum CryptoType implements Serializable {
     public String getUrl() {
         return url;
     }
+
+    public String getAbbreviation() {
+        return abbreviation;
+    }
+
     /**
      * Asynchronous method which fetch the value from the server if it is obsolete
      *
@@ -128,14 +142,6 @@ public enum CryptoType implements Serializable {
         }
     }
 
-
-    private void restoreData(Context context) {
-        if (sharedPreferencesCryptoHelper == null) {
-            sharedPreferencesCryptoHelper = new SharedPreferencesCryptoHelper(context);
-        }
-        sharedPreferencesCryptoHelper.updateCryptos();
-        hasBeenRestored = true;
-    }
 
     /**
      * Synchronous method
@@ -182,6 +188,13 @@ public enum CryptoType implements Serializable {
             client = new CryptoChangeClient(context);
         }
         return client;
+    }
+    private void restoreData(Context context) {
+        if (sharedPreferencesCryptoHelper == null) {
+            sharedPreferencesCryptoHelper = new SharedPreferencesCryptoHelper(context);
+        }
+        sharedPreferencesCryptoHelper.updateCryptos();
+        hasBeenRestored = true;
     }
 }
 

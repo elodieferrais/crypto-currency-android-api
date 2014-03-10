@@ -18,8 +18,16 @@ android {
     }
 }
 
+repositories {
+    maven {
+        url 'https://raw.github.com/elodieferrais/wonder-libraries/master'
+        name 'github-wonder-libraries'
+    }
+}
+
 dependencies {
     compile 'com.android.support:support-v4:+'
+    compile 'com.applidium:headerlistview:1.0.0'
     compile fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     compile project(':api')
 }

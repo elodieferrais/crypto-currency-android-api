@@ -1,34 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
-    <TextView
-        android:id="@+id/cell_account_type_textview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Type"/>
+    android:layout_height="wrap_content"
+    android:padding="@dimen/cell_row_paddind">
+
     <TextView
         android:id="@+id/cell_account_address_textview"
+        android:layout_width="150dip"
+        android:layout_height="wrap_content"
+        android:text="Account"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:fontFamily="sans-serif-regular"/>
+
+    <TextView
+        android:id="@+id/cell_account_balance_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Account"/>
+        android:text="Balance"
+        android:fontFamily="sans-serif-light"
 
-    <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_below="@id/cell_account_address_textview"/>
+    <TextView
+        android:id="@+id/cell_account_dollars_textview"
+        android:layout_weight="1"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
-        <TextView
-            android:id="@+id/cell_account_balance_textview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Balance"/>
-        <TextView
-            android:id="@+id/cell_account_dollars_textview"
-            android:layout_weight="1"
-            android:gravity="right"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="$$$$$"/>
-        </LinearLayout>
-</LinearLayout>
+        android:gravity="center_vertical"
+        android:textSize="25sp"
+        android:fontFamily="sans-serif-light"
+        android:typeface="normal"
+        android:text="23 $ 0po"/>
+</RelativeLayout>
