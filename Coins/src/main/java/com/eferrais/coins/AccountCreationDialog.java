@@ -38,6 +38,8 @@ public class AccountCreationDialog {
         coinsTypePicker.setMaxValue(getCoinsTypeValue().length - 1);
         coinsTypePicker.setMinValue(0);
         coinsTypePicker.setDisplayedValues(getCoinsTypeValue());
+        coinsTypePicker.setValue(1);
+
         //np.setWrapSelectorWheel(false);
 
         //Building dialog
@@ -109,5 +111,9 @@ public class AccountCreationDialog {
         }
         coinsType = CryptoType.values();
         return coinsType;
+    }
+
+    public void setPrefilledAddressValue(String address) {
+        addressEditText.setText(address);
     }
 }

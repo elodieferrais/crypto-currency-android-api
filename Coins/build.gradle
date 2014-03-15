@@ -30,4 +30,6 @@ dependencies {
     compile 'com.applidium:headerlistview:1.0.0'
     compile fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     compile project(':api')
+    compile 'com.google.zxing:android:4.6.3'
+    compile 'com.google.zxing:core:3.0.0'
 }

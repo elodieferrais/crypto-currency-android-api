@@ -7,8 +7,8 @@
         android:id="@+id/dialog_new_account_address_edtitext"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:hint="address"
-        android:text="LeBvkHPAJNkXRQcFoNovctez5nA8iCAeod"/>
+        android:hint="address"/>
+
     <NumberPicker
         android:id="@+id/dialog_new_account_type_picker"
         android:layout_width="match_parent"

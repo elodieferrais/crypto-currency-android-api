@@ -2,6 +2,7 @@ package com.eferrais.coins;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import com.eferrais.api.baseclient.CryptoAddressClient;
@@ -48,10 +50,15 @@ public class MainActivity extends Activity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_example) {
+        if (id == R.id.manually) {
             AccountCreationDialog accountCreationDialog = new AccountCreationDialog(this);
             accountCreationDialog.setAccountCreationDialogListener((AccountCreationDialogListener) getFragmentManager().findFragmentByTag(PlaceholderFragment.class.getSimpleName()));
             accountCreationDialog.show();
+        } else if (id == R.id.scan) {
+            Intent intent = new Intent(
+                    "com.google.zxing.client.android.SCAN");
+            intent.putExtra("SCAN_MODE", "QR_CODE_MODE,PRODUCT_MODE");
+            startActivityForResult(intent, 0);
         }
         return super.onOptionsItemSelected(item);
     }
@@ -145,6 +152,20 @@ public class MainActivity extends Activity {
 
         @Override
         public void onCancelAccountCreation() {
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 0) {
+
+            if (resultCode == RESULT_OK) {
+                String address = data.getStringExtra("SCAN_RESULT");
+                AccountCreationDialog accountCreationDialog = new AccountCreationDialog(this);
+                accountCreationDialog.setAccountCreationDialogListener((AccountCreationDialogListener) getFragmentManager().findFragmentByTag(PlaceholderFragment.class.getSimpleName()));
+                accountCreationDialog.setPrefilledAddressValue(address);
+                accountCreationDialog.show();
+            }
         }
     }
 }

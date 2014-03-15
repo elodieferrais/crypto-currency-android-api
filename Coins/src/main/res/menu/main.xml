@@ -3,5 +3,13 @@
     tools:context="com.eferrais.coins.MainActivity" >
     <item android:id="@+id/action_example"
         android:icon="@android:drawable/ic_menu_add"
-        android:showAsAction="always" />
+        android:showAsAction="always" >
+        <!-- "file" submenu -->
+        <menu>
+            <item android:id="@+id/scan"
+                android:title="Scan QR Code" />
+            <item android:id="@+id/manually"
+                android:title="Manually" />
+        </menu>
+        </item>
 </menu>
